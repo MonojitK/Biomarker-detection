@@ -3,7 +3,9 @@ import numpy as np
 import scipy.stats as stat
 from collections import defaultdict
 import time, os
-execfile('pathway_utilities.py', globals())
+with open("pathway_utilities.py") as f:
+    code = compile(f.read(), "pathway_utilities.py", 'exec')
+    exec(code, globals())
 gene2uniprot, uniprot2gene = geneID2uniprot(), uniprot2geneID()
 
 
@@ -22,7 +24,7 @@ def return_COAD_organoid_drug_response_IC50():
 	tmp = {} # { sample : { drug : [list of IC50]}}
 	fi_directory = '../data/organoid_COAD/drug_response'
 	f = open('%s/supp_table_S2b.txt' %fi_directory, 'r')
-	for line in f.xreadlines():
+	for line in f:
 		line = line.strip().split('\t')
 		if not 'Organoid' in line[0]:
 			if len(line)>5:
@@ -48,11 +50,11 @@ def parse_GPL16686():
 	'''
 	output = {} # { probe ID : gene ID }
 	
-	print 'importing probe ID - refseq ID, ', time.ctime()
+	print( 'importing probe ID - refseq ID, ', time.ctime())
 	tmp = {} # { probe ID : RefSeq ID }
 	fi_directory = '../data/organoid_COAD/expression/GPL16686'
-	f = open('%s/GPL16686_family.soft' %fi_directory, 'r')
-	for line in f.xreadlines():
+	f = open('%s/GPL16686_family.soft' %fi_directory, 'r', encoding="UTF-8")
+	for line in f:
 		line = line.strip().split('\t')
 		if (not '!' in line[0]) and (len(line)>5):
 			probeID, RefSeqID = line[0], line[5]
@@ -61,17 +63,17 @@ def parse_GPL16686():
 	f.close()
 
 	# RefSeq ID to gene ID
-	print 'importing refseq ID - gene ID, ', time.ctime()
+	print ('importing refseq ID - gene ID, ', time.ctime())
 	refseq_gene = {}
-	f = open('%s/geneID_RefSeqID_biomart_20190916.txt' %fi_directory, 'r')
-	for line in f.xreadlines():
+	f = open('%s/geneID_RefSeqID_biomart_20190916.txt' %fi_directory, 'r', encoding="UTF-8")
+	for line in f:
 		line = line.strip().split('\t')
 		if ('ENSG' in line[0]) and (len(line)==3):
 			geneID, refseqID = line[1], line[2]
 			refseq_gene[refseqID] = geneID
 	f.close()
 
-	print 'output dictionary, ', time.ctime()
+	print ('output dictionary, ', time.ctime())
 	for pID in tmp:
 		rID = tmp[pID]
 		if rID in refseq_gene:
@@ -95,7 +97,7 @@ def return_COAD_2015_cell_organoid_RMA_normalized_expression():
 	tmpExp = {} # { sample : { gene : [ list of expressions ] } }
 	geneList = set()
 
-	fi_directory = '../data/organoid_organoid/expression/GSE64392/GSE64392_series_matrix.txt'
+	fi_directory = '../data/organoid_COAD/expression/GSE64392/GSE64392_series_matrix.txt'
 	
 	fiList = os.listdir(fi_directory)
 
@@ -103,7 +105,7 @@ def return_COAD_2015_cell_organoid_RMA_normalized_expression():
 	if not 'geneID_expression_median.txt' in fiList:
 		probe_gene = parse_GPL16686() # { probe ID : gene }
 		f = open('%s/GSE64392_series_matrix.txt' %fi_directory, 'r')
-		for line in f.xreadlines():
+		for line in f:
 			line = line.strip().split('\t')
 			if '!Sample_title' in line[0]:
 				sampleList = line[1:]
@@ -150,7 +152,7 @@ def return_COAD_2015_cell_organoid_RMA_normalized_expression():
 	
 	else:
 		f = open('%s/geneID_expression_median.txt'%fi_directory, 'r')
-		for line in f.xreadlines():
+		for line in f:
 			line = line.strip().split('\t')
 			if 'geneID' in line[0]:
 				sampleList = line[2:]
