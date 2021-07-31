@@ -2,7 +2,10 @@
 import pandas as pd
 from collections import defaultdict
 import time, os, csv
-execfile('pathway_utilities.py', globals())
+with open("pathway_utilities.py") as f:
+    code = compile(f.read(), "pathway_utilities.py", 'exec')
+    exec(code, globals())
+
 
 
 def parse_Drugbank_Drug_Target_relationship():
@@ -10,7 +13,7 @@ def parse_Drugbank_Drug_Target_relationship():
     Drug-target relationship provided by Drugbank
 	output = { drug : [ list of targets in gene ID ] }
     """
-    print 'all drug-drug targets (including candidate drug targets) from Drugbank data are imported'
+    print('all drug-drug targets (including candidate drug targets) from Drugbank data are imported')
 
     output = defaultdict(list) # { drug : [ list of targets ] }
     gene2uniprot, uniprot2gene = geneID2uniprot(), uniprot2geneID()
@@ -18,7 +21,7 @@ def parse_Drugbank_Drug_Target_relationship():
     # DRUGBANK Drug ID & Drug Name matching
     annoDic = {} # { drugbank ID : drugName }
     #fi_directory = '/home/junghokong/PROJECT/bladder_cancer/code/15_network_based_analysis/data/Drugbank/drugbank_all_drugbank_vocabulary_downloadDate_20181116.csv/drugbank_vocabulary.csv'
-    f = open('../data/drugbank_vocabulary.csv', 'r')
+    f = open('../data/drugbank_vocabulary.csv', 'r', encoding="utf8")
     rdr = csv.reader(f)
     for line in rdr:
         if not 'DrugBank' in line[0]:
@@ -29,7 +32,7 @@ def parse_Drugbank_Drug_Target_relationship():
     # DRUGBANK Drug name & Drug Target (uniprot ID)
     tmpDic = defaultdict(list) # { Drug Name : [ list of drug targets ( in gene ID ) ] }
     #fi_directory = '/home/junghokong/PROJECT/bladder_cancer/code/15_network_based_analysis/data/Drugbank/drugbank_all_target_polypeptide_ids_downloadDate_20181113.csv/all.csv'
-    f = open('../data/all.csv', 'r')
+    f = open('../data/all.csv', 'r', encoding="utf8")
     rdr = csv.reader(f)
     for line in rdr:
         if not 'ID' == line[0]:
@@ -43,30 +46,6 @@ def parse_Drugbank_Drug_Target_relationship():
                             tmpDic[drugName].append(geneID)
     f.close()
     return tmpDic
-
-
-def parse_Drugbank_Drug_Target_relationship_uniprot_commonDrugID():
-	'''
-    Drug-target relationship provided by Drugbank
-	output = { common drug ID : [ list of targets in uniprot ID ] }
-	'''
-	output = defaultdict(list) # { common drug ID : [ list of targets in uniprot ID ] }
-	gene2uniprot, uniprot2gene = geneID2uniprot(), uniprot2geneID()
-	commonID_dbID, dbID_drug, drug_dbID, commonID_drug, drug_commonID = parse_Drugbank_drugbankID_synonyms() # dbID : Drugbank ID
-	dt = parse_Drugbank_Drug_Target_relationship() # { drug : [ list of targets in gene ID ] }
-	
-	for drug in dt:
-		common_drugID = drug
-		if drug in drug_commonID:
-			common_drugID = drug_commonID[drug]
-		if not common_drugID in output:
-			output[common_drugID] = []
-		for gene in dt[drug]:
-			if gene in gene2uniprot:
-				uniprot = gene2uniprot[gene]
-				output[common_drugID].append(uniprot)
-	return output
-
 
 
 
@@ -88,7 +67,7 @@ def parse_Drugbank_drugbankID_synonyms():
 	output5 = {} # { synonym ; common drug name }
 
 	#fi_directory = '/home/junghokong/PROJECT/bladder_cancer/code/15_network_based_analysis/data/Drugbank/drugbank_all_drugbank_vocabulary_downloadDate_20181116.csv/drugbank_vocabulary.csv'
-	f = open('../data/drugbank_vocabulary.csv', 'r')
+	f = open('../data/drugbank_vocabulary.csv', 'r', encoding="utf8")
 	rdr = csv.reader(f)
 	for line in rdr:
 		if not 'DrugBank' in line[0]:
@@ -118,3 +97,26 @@ def parse_Drugbank_drugbankID_synonyms():
 	return output1, annoDic, output3, output4, output5
 	
 	
+def parse_Drugbank_Drug_Target_relationship_uniprot_commonDrugID():
+	'''
+    Drug-target relationship provided by Drugbank
+	output = { common drug ID : [ list of targets in uniprot ID ] }
+	'''
+	output = defaultdict(list) # { common drug ID : [ list of targets in uniprot ID ] }
+	gene2uniprot, uniprot2gene = geneID2uniprot(), uniprot2geneID()
+	commonID_dbID, dbID_drug, drug_dbID, commonID_drug, drug_commonID = parse_Drugbank_drugbankID_synonyms() # dbID : Drugbank ID
+	dt = parse_Drugbank_Drug_Target_relationship() # { drug : [ list of targets in gene ID ] }
+	
+	for drug in dt:
+		common_drugID = drug
+		if drug in drug_commonID:
+			common_drugID = drug_commonID[drug]
+		if not common_drugID in output:
+			output[common_drugID] = []
+		for gene in dt[drug]:
+			if gene in gene2uniprot:
+				uniprot = gene2uniprot[gene]
+				output[common_drugID].append(uniprot)
+	return output
+
+
