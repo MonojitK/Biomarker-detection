@@ -11,7 +11,7 @@ def reactome_genes(): # provide in a dictionary
     output = defaultdict(list)
     output_list = []
     f = open('../data/msigdb.v6.1.symbols.gmt.txt','r')
-    for line in f.xreadlines():
+    for line in f:
         line = line.strip().split('\t')
         if 'REACTOME' in line[0]:
             reactome = line[0]
