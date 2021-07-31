@@ -17,6 +17,25 @@ def reactome_genes(): # provide in a dictionary
             reactome = line[0]
             output_list.append(reactome)
             for i in range(2, len(line)):
+                gene = line[i]## Providing pathway (reactome) genes, gene-UniProtID mapping, gene-Ensembl ID mapping
+import pandas as pd
+import numpy as np
+import scipy.stats as stat
+from collections import defaultdict
+import os, time
+
+
+# REACTOME genes
+def reactome_genes(): # provide in a dictionary
+    output = defaultdict(list)
+    output_list = []
+    f = open('../data/msigdb.v6.1.symbols.gmt.txt','r')
+    for line in f:
+        line = line.strip().split('\t')
+        if 'REACTOME' in line[0]:
+            reactome = line[0]
+            output_list.append(reactome)
+            for i in range(2, len(line)):
                 gene = line[i]
                 output[reactome].append(gene)
     f.close()
