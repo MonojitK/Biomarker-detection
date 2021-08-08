@@ -54,6 +54,7 @@ def parse_GPL16686():
 	tmp = {} # { probe ID : RefSeq ID }
 	fi_directory = '../data/organoid_COAD/expression/GPL16686'
 	f = open('%s/GPL16686_family.soft' %fi_directory, 'r', encoding="UTF-8")
+	#download Link: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL16686
 	for line in f:
 		line = line.strip().split('\t')
 		if (not '!' in line[0]) and (len(line)>5):
