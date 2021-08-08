@@ -3,8 +3,12 @@ import scipy.stats as stat
 import numpy as np
 from collections import defaultdict
 import pandas as pd
-execfile('pathway_utilities.py', globals())
-execfile('parse_Drugbank.py', globals())
+with open("pathway_utilities.py") as f:
+    code = compile(f.read(), "pathway_utilities.py", 'exec')
+    exec(code, globals())
+with open("parse_Drugbank.py") as f:
+    code = compile(f.read(), "parse_Drugbank.py", 'exec')
+    exec(code, globals())
 gene2uniprot, uniprot2gene = geneID2uniprot(), uniprot2geneID()
 common_dbID, dbID_commonSyn, commonSyn_dbID, common_Syn, Syn_common = parse_Drugbank_drugbankID_synonyms()
 
@@ -123,4 +127,3 @@ def parse_TCGA_COAD_survival_boolean_format():
 		if ('status' in output[pat]) and ('months' in output[pat]):
 			result_output[pat] = output[pat]
 	return result_output
-
