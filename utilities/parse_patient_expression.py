@@ -5,7 +5,9 @@ import gzip
 import os, time, json
 import scipy.stats as stat
 import numpy as np
-execfile('pathway_utilities.py', globals())
+with open("pathway_utilities.py") as f:
+    code = compile(f.read(), "pathway_utilities.py", 'exec')
+    exec(code, globals())
 ensg2gene, gene2uniprot, uniprot2gene = ensembl2geneID(), geneID2uniprot(), uniprot2geneID()
 
 # expression
@@ -29,7 +31,7 @@ def parse_TCGA_COAD_caseid_fileName_barcodeid():
 
 	# caseID and barcodeID
 	f = open('%s/clinical.tsv'%fi_directory, 'r')
-	for line in f.xreadlines():
+	for line in f:
 		line = line.strip().split('\t')
 		if not 'case_id' in line[0]:
 			case_id, barcode_id = line[0], line[1]
@@ -76,7 +78,7 @@ def parse_TCGA_COAD_log2_FPKM_expression():
 	_, fileName_barcode = parse_TCGA_COAD_caseid_fileName_barcodeid()
 	
 	f = open('%s/expression_LOG2_FPKM_UQ.txt' %fi_directory, 'r')
-	for line in f.xreadlines():
+	for line in f:
 		line = line.strip().split('\t')
 		if 'gene' in line[0]:
 			patList = line[2:]
